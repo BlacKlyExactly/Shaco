@@ -50,6 +50,23 @@ impl RESTClient {
             .or_else(|_| Ok(serde_json::Value::Null))
     }
 
+    pub async fn patch<T: Serialize>(
+        &self,
+        endpoint: String,
+        body: T,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let req: serde_json::Value = self
+            .reqwest_client
+            .patch(format!("https://127.0.0.1:{}{}", self.port, endpoint))
+            .json(&body)
+            .send()
+            .await?
+            .json()
+            .await?;
+
+        Ok(req)
+    }
+
     /// Make a put request to the specified endpoint
     pub async fn put<T: Serialize>(
         &self,
